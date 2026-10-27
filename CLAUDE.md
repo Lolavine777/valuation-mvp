@@ -13,7 +13,7 @@ Pain point đã chốt: đầu tư theo cảm tính, không có quy trình/luậ
 
 ## Trạng thái hiện tại
 
-MVP chạy được: `python3 -m valuation inputs/demo.json`. 19 test qua.
+MVP chạy được: `python3 -m valuation inputs/demo.json`. Toàn bộ test qua.
 Engine DCF đã được đối chiếu độc lập bằng tay (EV và giá trị/cp của demo khớp).
 Dữ liệu `demo.json` là **công ty giả định**.
 

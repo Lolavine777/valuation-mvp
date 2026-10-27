@@ -109,15 +109,14 @@ def build_memo(a: dict[str, Any]) -> str:
     # 3. Kịch bản
     L.append("## 3. Khoảng giá trị theo kịch bản")
     L.append("")
-    L.append("| Kịch bản | Giá trị/cp (VND) | So với giá hiện tại |")
+    L.append("| Kịch bản | Giá trị/cp (VND) | Biên an toàn |")
     L.append("|---|---|---|")
     for name, label in (("bear", "Bear"), ("base", "Base"), ("bull", "Bull")):
         r = sc.get(name)
         if r is None:
             L.append(f"| {label} | chưa định nghĩa | - |")
             continue
-        diff = f"{(r['per_share'] / price - 1) * 100:+.0f}%" if price else "-"
-        L.append(f"| {label} | {_n(r['per_share'])} | {diff} |")
+        L.append(f"| {label} | {_n(r['per_share'])} | {_p(r['mos'], 0)} |")
     L.append("")
 
     # 4. Độ nhạy

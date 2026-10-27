@@ -26,7 +26,7 @@ Nếu bạn thích giao diện đồ họa, ứng dụng Claude Desktop cũng ch
 ```bash
 unzip valuation-mvp.zip
 cd valuation-mvp
-python3 -m unittest discover -s tests     # phải thấy: Ran 19 tests ... OK
+python3 -m unittest discover -s tests     # dòng cuối phải là: OK
 python3 -m valuation inputs/demo.json     # in memo của công ty giả định
 ```
 

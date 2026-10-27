@@ -12,6 +12,7 @@ giá trị mỗi cổ phiếu tính bằng VND. Đổi đơn vị chỉ cần s�
 from __future__ import annotations
 
 import copy
+import datetime as dt
 from typing import Any, Optional
 
 PER_SHARE_FACTOR = 1000.0  # (tỷ VND * 1e9) / (triệu cp * 1e6) = tỷ * 1000 / triệu cp
@@ -43,6 +44,9 @@ SCENARIO_KEYS = (
     "years",
 )
 
+NUMERIC_KEYS = SCENARIO_KEYS + ("revenue", "tax_rate", "net_debt", "shares_mn", "price", "minorities")
+WACC_NUMERIC_KEYS = ("rf", "erp", "beta", "cost_of_debt", "debt", "equity_weight", "override")
+
 FINANCIAL_KEYWORDS = (
     "ngân hàng",
     "bảo hiểm",
@@ -59,6 +63,10 @@ class InputError(ValueError):
     """Dữ liệu đầu vào sai hoặc thiếu."""
 
 
+def _is_number(v: Any) -> bool:
+    return isinstance(v, (int, float)) and not isinstance(v, bool)
+
+
 def _years(inp: dict) -> tuple[int, int]:
     return int(inp.get("years", 10)), int(inp.get("high_growth_years", 5))
 
@@ -71,6 +79,38 @@ def validate(inp: dict) -> list[str]:
             errors.append(f"thiếu trường '{key}'")
     if errors:
         return errors
+
+    # Kiểm tra kiểu trước, để các phép so sánh bên dưới không ném TypeError.
+    w = inp["wacc"]
+    if not isinstance(w, dict):
+        return ["wacc phải là object"]
+    values = [(k, inp.get(k)) for k in NUMERIC_KEYS] + [(f"wacc.{k}", w.get(k)) for k in WACC_NUMERIC_KEYS]
+    for key, v in values:
+        if v is not None and not _is_number(v):
+            errors.append(f"'{key}' phải là số, đang là {v!r}")
+    if errors:
+        return errors
+
+    if inp.get("as_of") is not None:
+        try:
+            dt.date.fromisoformat(inp["as_of"])
+        except (TypeError, ValueError):
+            errors.append(f"as_of phải có dạng YYYY-MM-DD, đang là {inp['as_of']!r}")
+    if not str(inp["ticker"]).isalnum():
+        errors.append(f"ticker chỉ gồm chữ và số (dùng làm tên file nhật ký), đang là {inp['ticker']!r}")
+    sc = inp.get("scenarios", {})
+    if not isinstance(sc, dict):
+        errors.append("scenarios phải là object")
+        sc = {}
+    for name, over in sc.items():
+        if name not in ("bear", "bull") or not isinstance(over, dict):
+            errors.append(f"scenarios.{name}: chỉ hỗ trợ 'bear' và 'bull', mỗi kịch bản là một object")
+            continue
+        for key in over:
+            if key not in SCENARIO_KEYS and key != "wacc_override":
+                errors.append(
+                    f"scenarios.{name}: không ghi đè được '{key}' (chỉ: {', '.join(SCENARIO_KEYS)}, wacc_override)"
+                )
 
     n, h = _years(inp)
     if h < 1:
@@ -86,10 +126,7 @@ def validate(inp: dict) -> list[str]:
     if inp["roic"] <= 0 or inp["roic_terminal"] <= 0:
         errors.append("roic và roic_terminal phải > 0")
 
-    w = inp["wacc"]
-    if not isinstance(w, dict):
-        errors.append("wacc phải là object")
-    elif "override" not in w:
+    if "override" not in w:
         for key in ("rf", "erp", "beta", "cost_of_debt"):
             if key not in w:
                 errors.append(f"thiếu wacc.{key} (hoặc dùng wacc.override)")
@@ -190,6 +227,7 @@ def value(inp: dict) -> dict[str, Any]:
         "ev": ev,
         "equity": equity,
         "per_share": per_share,
+        "mos": margin_of_safety(per_share, inp.get("price")),
     }
 
 
@@ -201,24 +239,31 @@ def margin_of_safety(per_share: float, price: Optional[float]) -> Optional[float
 
 
 def scenarios(inp: dict) -> dict[str, Optional[dict]]:
-    """Chạy bear/base/bull. Mỗi kịch bản chỉ ghi đè các giả định có trong whitelist."""
+    """Chạy bear/base/bull. Kịch bản chưa khai báo trả về None.
+
+    Kịch bản đã khai báo mà không hợp lệ thì ném InputError, không lặng lẽ bỏ qua:
+    một khoảng bear-bull sai còn nguy hiểm hơn không có khoảng nào.
+    """
     out: dict[str, Optional[dict]] = {}
     overrides = inp.get("scenarios", {})
     for name in ("bear", "base", "bull"):
-        x = copy.deepcopy(inp)
-        if name != "base":
-            for key, val in overrides.get(name, {}).items():
-                if key in SCENARIO_KEYS:
-                    x[key] = val
-                elif key == "wacc_override":
-                    x["wacc"] = {"override": val}
         if name != "base" and name not in overrides:
             out[name] = None
             continue
+        x = copy.deepcopy(inp)
+        if name != "base":
+            for key, val in overrides[name].items():
+                if key == "wacc_override":
+                    x["wacc"] = {"override": val}
+                else:
+                    x[key] = val
         try:
+            errors = validate(x)
+            if errors:
+                raise InputError("; ".join(errors))
             out[name] = value(x)
-        except InputError:
-            out[name] = None
+        except InputError as e:
+            raise InputError(f"kịch bản {name}: {e}") from None
     return out
 
 
@@ -345,6 +390,6 @@ def analyze(inp: dict) -> dict[str, Any]:
         "scenarios": scenarios(inp),
         "sensitivity": sensitivity(inp),
         "reverse": reverse_dcf(inp),
-        "mos": margin_of_safety(base["per_share"], inp.get("price")),
+        "mos": base["mos"],
         "flags": flags(inp, base),
     }

@@ -13,7 +13,7 @@ Cần Python 3.10 trở lên. Không cần cài gì thêm.
 ```bash
 python3 -m valuation inputs/demo.json            # in memo ra màn hình
 python3 -m valuation inputs/demo.json --save     # lưu vào journal/<ngày>_<mã>.md
-python3 -m unittest discover -s tests            # chạy test (19 test)
+python3 -m unittest discover -s tests            # chạy toàn bộ test
 ```
 
 `inputs/demo.json` là **công ty giả định**, số liệu minh họa, chỉ để xem công cụ chạy.
@@ -63,6 +63,8 @@ tăng trưởng không tạo giá trị khi ROIC = WACC (xem `tests/test_dcf.py`
 - DCF nhạy với giả định. Kết quả là một khoảng, không phải sự thật.
 - Chiết khấu cuối năm (không giữa năm); tỷ trọng WACC theo giá thị trường (không theo giá trị nội tại);
   beta, ERP và lãi suất phi rủi ro nhập tay, chưa lấy tự động.
+- Tái đầu tư năm t tính theo tăng trưởng của chính năm t (g_t / ROIC), không theo tăng trưởng năm sau.
+  Khi tăng trưởng không đổi, hai cách cho cùng kết quả; trong giai đoạn tăng trưởng giảm dần, cách này cho FCFF hơi thấp hơn (thận trọng).
 - Chưa nối dữ liệu thật. Số liệu phải nhập tay từ báo cáo tài chính.
 - Một công ty chạy tốt không chứng minh phương pháp. Cần so sánh trên nhiều mã qua 6-12 tháng.
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import date
 from pathlib import Path
 
 from . import dcf
@@ -48,7 +49,7 @@ def main(argv: list[str] | None = None) -> int:
     print(memo)
 
     if args.save:
-        d = inp.get("as_of") or __import__("datetime").date.today().isoformat()
+        d = inp.get("as_of") or date.today().isoformat()
         out_dir = Path(args.journal)
         out_dir.mkdir(parents=True, exist_ok=True)
         out = out_dir / f"{d}_{inp['ticker']}.md"
