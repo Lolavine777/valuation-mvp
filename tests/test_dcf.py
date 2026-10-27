@@ -78,6 +78,10 @@ class TestEngine(unittest.TestCase):
         self.assertAlmostEqual(res["equity"], res["ev"] - 200.0)
         self.assertAlmostEqual(res["per_share"], res["equity"] * 1000 / 100.0)
 
+    def test_equity_bridge_minorities_and_associates(self):
+        res = dcf.value(make_inputs(net_debt=200.0, minorities=30.0, associates=50.0))
+        self.assertAlmostEqual(res["equity"], res["ev"] - 200.0 - 30.0 + 50.0)
+
     def test_wacc_components(self):
         inp = make_inputs(
             wacc={"rf": 0.04, "erp": 0.07, "beta": 1.2, "cost_of_debt": 0.09, "equity_weight": 0.8},

@@ -98,6 +98,10 @@ def build_memo(a: dict[str, Any]) -> str:
         L.append(f"| Tỷ trọng vốn chủ / nợ | {_p(w['we'], 0)} / {_p(w['wd'], 0)} |")
         L.append(f"| **WACC** | **{_p(w['wacc'], 2)}** |")
     L.append(f"| Nợ ròng | {_n(inp['net_debt'])} tỷ |")
+    if inp.get("minorities"):
+        L.append(f"| Lợi ích cổ đông không kiểm soát (trừ ra) | {_n(inp['minorities'])} tỷ |")
+    if inp.get("associates"):
+        L.append(f"| Đầu tư vào công ty liên kết, giá sổ sách (cộng vào) | {_n(inp['associates'])} tỷ |")
     L.append(f"| Số cổ phiếu | {_n(inp['shares_mn'])} triệu |")
     L.append("")
     L.append(

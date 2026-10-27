@@ -63,14 +63,13 @@ Nếu tóm tắt của nó khác với README, đó là tín hiệu cần xem l�
 
 ## 6. Rồi mới giao việc, mỗi lần một việc
 
-Theo thứ tự trong `CLAUDE.md`. Ví dụ việc số 1:
+Theo thứ tự trong `CLAUDE.md`. Lấy số liệu cho một mã từ báo cáo tài chính gốc:
 
 ```
-Làm việc 1 trong CLAUDE.md: tools/fetch_vnstock.py.
-Trước khi viết code, đọc tài liệu và giấy phép hiện hành của vnstock và cho tôi biết:
-(a) dùng được phần miễn phí cho mục đích cá nhân không, (b) hàm nào lấy được doanh thu TTM,
-nợ ròng, số cổ phiếu, giá. Chưa viết code cho đến khi tôi đồng ý.
+/bctc FPT
 ```
+
+Lần đầu cần `brew install poppler` để đọc được PDF dạng ảnh scan.
 
 Các quy tắc trong `CLAUDE.md` (tối giản, không bịa số liệu, không biến đầu ra thành khuyến nghị,
 test phải qua) sẽ được áp dụng cho mọi việc.

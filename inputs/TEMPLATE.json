@@ -16,6 +16,8 @@
   "_net_debt": "Nợ vay có lãi trừ tiền và tương đương tiền (và đầu tư ngắn hạn), tỷ VND. Có thể âm nếu dư tiền.",
   "minorities": 0,
   "_minorities": "Lợi ích cổ đông không kiểm soát, tỷ VND (không bắt buộc, mặc định 0).",
+  "associates": 0,
+  "_associates": "Đầu tư vào công ty liên doanh, liên kết trên bảng cân đối (giá sổ sách), tỷ VND. Được cộng vào giá trị vốn chủ vì lãi của chúng không nằm trong EBIT. Vì vậy khi đặt biên EBIT, không tính phần lãi từ công ty liên kết.",
 
   "years": 10,
   "high_growth_years": 5,

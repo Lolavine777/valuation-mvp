@@ -1,0 +1,46 @@
+{
+  "ticker": "FPT",
+  "company": "Công ty Cổ phần FPT",
+  "sector": "Công nghệ thông tin",
+  "period_end": "2026-06-30",
+  "months": 6,
+  "documents": {
+    "A": {
+      "title": "BCTC hợp nhất giữa niên độ 6 tháng 2026 đã soát xét (PwC)",
+      "source": "https://fpt.com/api/download?url=%2Fapi%2Fmedia%2F20260821_FPT_BCTC_hop_nhat_ban_nien_da_soat_xet_nam_2026_3b1ebb3536.pdf",
+      "unit": "VND"
+    },
+    "B": {
+      "title": "BCTC hợp nhất năm 2025 đã kiểm toán",
+      "source": "https://fpt.com/api/download?url=%2Fapi%2Fmedia%2F20260319_fpt_bctc_hop_nhat_nam_2025_da_kiem_toan_0159f59257.pdf",
+      "unit": "VND"
+    },
+    "C": {
+      "title": "Nghị quyết HĐQT số 01.10-2026/NQ-HĐQTFPT về tăng vốn điều lệ sau phát hành cổ phiếu từ nguồn vốn chủ sở hữu",
+      "source": "https://fpt.com/api/download?url=%2Fapi%2Fmedia%2F20261007_FPT_Nghi_quyet_HDQT_so_01_10_2026_vv_tang_von_sau_phat_hanh_CP_de_tang_von_tu_NVCSH_cbb031ee2e.pdf",
+      "unit": "VND"
+    }
+  },
+  "values": {
+    "revenue_ytd": {"value": 26268500667974, "doc": "A", "page": 12, "line": "Doanh thu thuần về bán hàng và cung cấp dịch vụ (mã số 10), 01/01/2026-30/06/2026"},
+    "revenue_ytd_prior": {"value": 32682853982527, "doc": "A", "page": 12, "line": "Doanh thu thuần về bán hàng và cung cấp dịch vụ (mã số 10), 01/01/2025-30/06/2025"},
+    "revenue_ytd_prior_comparable": {"value": 23325685794923, "doc": "A", "page": 18, "line": "Thuyết minh 1: doanh thu thuần 6 tháng 2025, số liệu không hợp nhất FTEL là công ty con"},
+    "revenue_fy_prior": {"value": 70112825100710, "doc": "B", "page": 12, "line": "Doanh thu thuần về bán hàng và cung cấp dịch vụ (mã số 10), năm 2025"},
+    "cash": {"value": 8843161132730, "doc": "A", "page": 8, "line": "Tiền và các khoản tương đương tiền (mã số 110), 30/06/2026"},
+    "short_term_investments": {"value": 20128417972525, "doc": "A", "page": 8, "line": "Các khoản đầu tư tài chính ngắn hạn (mã số 120), 30/06/2026"},
+    "short_term_debt": {"value": 16368916886521, "doc": "A", "page": 10, "line": "Vay và nợ thuê tài chính ngắn hạn (mã số 321), 30/06/2026"},
+    "long_term_debt": {"value": 2080610610531, "doc": "A", "page": 10, "line": "Vay và nợ thuê tài chính dài hạn (mã số 339), 30/06/2026"},
+    "minorities": {"value": 1144217283327, "doc": "A", "page": 11, "line": "Lợi ích cổ đông không kiểm soát (mã số 429), 30/06/2026"},
+    "associates": {"value": 9994654773920, "doc": "A", "page": 9, "line": "Đầu tư vào công ty liên doanh, liên kết (mã số 262), 30/06/2026"},
+    "shares_outstanding": {"value": 1703507121, "doc": "A", "page": 51, "line": "Thuyết minh 25b: cổ phiếu đang lưu hành, 30/06/2026"},
+    "shares_outstanding_current": {"value": 1885727648, "doc": "C", "page": 2, "line": "Điều 1: tổng số cổ phần sau thay đổi vốn, thời điểm thay đổi vốn 30/9/2026"}
+  },
+  "price": {"value": 55400, "date": "2026-10-27", "source": "https://fpt.com/vi/nha-dau-tu/thong-tin-co-phieu"},
+  "notes": [
+    "Từ 01/01/2026 FPT chuyển Công ty CP Viễn thông FPT (FTEL) từ hợp nhất toàn bộ sang phương pháp vốn chủ sở hữu (tài liệu A, trang PDF 12 chú thích (i) và trang 17). Số liệu năm 2025 vẫn hợp nhất FTEL; khoản đầu tư vào FTEL nay nằm trong đầu tư liên kết.",
+    "Từ 2026 áp dụng Thông tư 99/2025/TT-BTC thay Thông tư 200: một số mã số chỉ tiêu thay đổi (tài liệu A, trang PDF 19).",
+    "Sau 30/06/2026: vốn điều lệ 17.143.264.220.000 đồng trước đợt thưởng (đã gồm ESOP tháng 7/2026), phát hành thêm 171.401.226 cổ phiếu từ nguồn vốn chủ sở hữu, hoàn tất 30/09/2026 (tài liệu C, trang PDF 2).",
+    "BCTC quý 3/2026 chưa có trên trang nhà đầu tư của FPT tại ngày 27/10/2026; kỳ gần nhất dùng được là bán niên 2026.",
+    "Lãi từ công ty liên doanh, liên kết 6 tháng 2026 là 1.423.398.496.350 đồng (tài liệu A, trang PDF 12, mã số 27): khi đặt biên EBIT, không tính khoản này vì đã cộng giá trị đầu tư liên kết vào vốn chủ."
+  ]
+}

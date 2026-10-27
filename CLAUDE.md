@@ -16,6 +16,8 @@ Pain point đã chốt: đầu tư theo cảm tính, không có quy trình/luậ
 MVP chạy được: `python3 -m valuation inputs/demo.json`. Toàn bộ test qua.
 Engine DCF đã được đối chiếu độc lập bằng tay (EV và giá trị/cp của demo khớp).
 Dữ liệu `demo.json` là **công ty giả định**.
+`inputs/FPT.json` có số liệu thật lấy từ BCTC gốc của FPT, nguồn và số trang ghi trong `_nguon`.
+Các giả định phán đoán của FPT chưa được điền.
 
 ## Quy tắc bắt buộc
 
@@ -33,13 +35,14 @@ Dữ liệu `demo.json` là **công ty giả định**.
 
 ## Việc tiếp theo (theo thứ tự ưu tiên, mỗi lần làm một việc)
 
-1. **`tools/fetch_vnstock.py`**: lấy doanh thu TTM, nợ ròng, số cổ phiếu, giá từ thư viện `vnstock`
-   và điền một file JSON nháp theo `inputs/TEMPLATE.json`. Chỉ điền **số liệu**; để trống các giả định phán đoán.
-   - Kiểm tra API và giấy phép hiện hành của vnstock trước khi viết (https://vnstocks.com và
-     https://github.com/thinh-vu/vnstock). Phiên bản mới có thư viện mở rộng theo gói tài trợ; dùng phần miễn phí.
-   - Dữ liệu lấy từ nguồn bên thứ ba và có thể thay đổi/gãy. In rõ nguồn và ngày lấy; nhắc người dùng đối chiếu
-     với báo cáo tài chính gốc ít nhất cho lần đầu.
-   - Làm sạch đơn vị (tỷ VND, triệu cp, VND/cp) và có test với dữ liệu giả.
+1. **Lấy số liệu: đã xong bằng `/bctc <MA>`** (`.claude/skills/bctc`, `prompts/extract_bctc.md`, `tools/draft_input.py`).
+   LLM đọc BCTC gốc và chép số kèm trang; script tính TTM, nợ ròng, đổi đơn vị và có test.
+   Quyết định ngày 2026-10-27, đừng làm lại:
+   - **Không dùng `vnstock`.** PyPI cách ly `vnstock` và `vnai` từ 24/9/2026. Theo CHANGELOG của chính họ, các bản trước
+     tự ghi chỉ dẫn vào file cấu hình của trợ lý AI, kể cả file toàn cục của Claude Code, mỗi lần `import`. `vnai` gửi telemetry.
+   - **Không gọi API nội bộ của Vietcap hay công ty chứng khoán.** Claude Code chặn vì là lách kiểm soát truy cập, kể cả khi người dùng đồng ý.
+   - API chính thức: SSI FastConnect Data miễn phí nhưng chỉ có giá, chỉ số và số cổ phiếu niêm yết, không có BCTC.
+     FiinQuant và EODHD có BCTC nhưng trả phí và cần đăng ký. Người dùng chưa muốn đăng ký; có thể xem lại sau.
 2. **Nhật ký kiểm chứng**: một file CSV nhỏ (`journal/log.csv`) ghi mã, ngày, giá, giá trị base/bear/bull,
    VN-Index lúc đó; một lệnh để điền giá và VN-Index tại mốc 6/12 tháng và in so sánh. Mục đích: biết công cụ
    có giúp ích hay không, so với việc chỉ giữ chỉ số.

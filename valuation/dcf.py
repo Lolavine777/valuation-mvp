@@ -44,7 +44,7 @@ SCENARIO_KEYS = (
     "years",
 )
 
-NUMERIC_KEYS = SCENARIO_KEYS + ("revenue", "tax_rate", "net_debt", "shares_mn", "price", "minorities")
+NUMERIC_KEYS = SCENARIO_KEYS + ("revenue", "tax_rate", "net_debt", "shares_mn", "price", "minorities", "associates")
 WACC_NUMERIC_KEYS = ("rf", "erp", "beta", "cost_of_debt", "debt", "equity_weight", "override")
 
 FINANCIAL_KEYWORDS = (
@@ -214,7 +214,8 @@ def value(inp: dict) -> dict[str, Any]:
     pv_terminal = terminal_value / (1 + wacc) ** n
 
     ev = pv_explicit + pv_terminal
-    equity = ev - inp["net_debt"] - inp.get("minorities", 0.0)
+    # Lãi từ công ty liên kết không nằm trong EBIT nên giá trị của chúng được cộng riêng (theo giá sổ sách).
+    equity = ev - inp["net_debt"] - inp.get("minorities", 0.0) + inp.get("associates", 0.0)
     per_share = equity * PER_SHARE_FACTOR / inp["shares_mn"]
 
     return {

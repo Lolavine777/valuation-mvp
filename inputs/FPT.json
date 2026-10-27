@@ -1,0 +1,83 @@
+{
+  "_ghi_chu": "Tạo bởi tools/draft_input.py. Tiền: tỷ VND. Số cổ phiếu: triệu cp. Giá: VND/cp. Tỷ lệ: 0.10 = 10%. Số liệu có nguồn trong _nguon; các giả định phán đoán do bạn điền. Chạy lại script chỉ cập nhật số liệu.",
+  "company": "Công ty Cổ phần FPT",
+  "ticker": "FPT",
+  "sector": "Công nghệ thông tin",
+  "as_of": "2026-10-27",
+  "price": 55400,
+  "_price": "Giá thị trường hiện tại, VND/cp. Cần để tính biên an toàn và reverse DCF.",
+  "shares_mn": 1885.728,
+  "_shares_mn": "Số cổ phiếu đang lưu hành, triệu cp.",
+  "revenue": 52982.2,
+  "_revenue": "Doanh thu thuần 12 tháng gần nhất (TTM), tỷ VND. Lấy từ báo cáo kết quả kinh doanh.",
+  "net_debt": -10522.1,
+  "_net_debt": "Nợ vay có lãi trừ tiền và tương đương tiền (và đầu tư ngắn hạn), tỷ VND. Có thể âm nếu dư tiền.",
+  "minorities": 1144.2,
+  "_minorities": "Lợi ích cổ đông không kiểm soát, tỷ VND (không bắt buộc, mặc định 0).",
+  "associates": 9994.7,
+  "_associates": "Đầu tư vào công ty liên doanh, liên kết trên bảng cân đối (giá sổ sách), tỷ VND. Được cộng vào giá trị vốn chủ vì lãi của chúng không nằm trong EBIT. Vì vậy khi đặt biên EBIT, không tính phần lãi từ công ty liên kết.",
+  "years": 10,
+  "high_growth_years": 5,
+  "_years": "Tổng số năm dự phóng, và số năm đầu giữ tăng trưởng cao. Các năm còn lại giảm dần về tăng trưởng dài hạn.",
+  "growth_start": 0.0,
+  "_growth_start": "Tăng trưởng doanh thu hằng năm trong giai đoạn đầu. Đây là giả định phán đoán quan trọng nhất.",
+  "growth_terminal": 0.0,
+  "_growth_terminal": "Tăng trưởng dài hạn (vĩnh viễn). Không nên cao hơn lãi suất phi rủi ro.",
+  "margin_start": 0.0,
+  "margin_target": 0.0,
+  "_margin": "Biên EBIT hiện tại và biên EBIT mục tiêu đạt được sau high_growth_years. Muốn đổi biên thì cần luận điểm cụ thể.",
+  "tax_rate": 0.2,
+  "roic": 0.0,
+  "roic_terminal": 0.0,
+  "_roic": "ROIC giai đoạn tăng trưởng và ROIC dài hạn. Tái đầu tư = tăng trưởng / ROIC. ROIC dài hạn nên tiến gần WACC trừ khi có lợi thế cạnh tranh bền vững.",
+  "wacc": {
+    "rf": 0.0,
+    "erp": 0.0,
+    "beta": 1.0,
+    "cost_of_debt": 0.0,
+    "debt": 0,
+    "_wacc": "Ke = rf + beta*erp (erp đã gồm phần bù rủi ro quốc gia). Tỷ trọng vốn theo giá thị trường. Hoặc thay bằng: { \"override\": 0.11 }. Hoặc thêm \"equity_weight\" nếu không có giá."
+  },
+  "scenarios": {
+    "bear": {
+      "growth_start": 0.0
+    },
+    "bull": {
+      "growth_start": 0.0
+    },
+    "_scenarios": "Ghi đè bất kỳ giả định nào trong: growth_start, growth_terminal, margin_start, margin_target, roic, roic_terminal, high_growth_years, years, wacc_override."
+  },
+  "_nguon": {
+    "lay_ngay": "2026-10-27",
+    "ky_bao_cao": "6 tháng kết thúc 2026-06-30",
+    "tai_lieu": {
+      "A": "BCTC hợp nhất giữa niên độ 6 tháng 2026 đã soát xét (PwC) (https://fpt.com/api/download?url=%2Fapi%2Fmedia%2F20260821_FPT_BCTC_hop_nhat_ban_nien_da_soat_xet_nam_2026_3b1ebb3536.pdf)",
+      "B": "BCTC hợp nhất năm 2025 đã kiểm toán (https://fpt.com/api/download?url=%2Fapi%2Fmedia%2F20260319_fpt_bctc_hop_nhat_nam_2025_da_kiem_toan_0159f59257.pdf)",
+      "C": "Nghị quyết HĐQT số 01.10-2026/NQ-HĐQTFPT về tăng vốn điều lệ sau phát hành cổ phiếu từ nguồn vốn chủ sở hữu (https://fpt.com/api/download?url=%2Fapi%2Fmedia%2F20261007_FPT_Nghi_quyet_HDQT_so_01_10_2026_vv_tang_von_sau_phat_hanh_CP_de_tang_von_tu_NVCSH_cbb031ee2e.pdf)"
+    },
+    "so_lieu": {
+      "revenue_ytd": "26,268,500,667,974 · tài liệu A, trang PDF 12: Doanh thu thuần về bán hàng và cung cấp dịch vụ (mã số 10), 01/01/2026-30/06/2026",
+      "revenue_ytd_prior": "32,682,853,982,527 · tài liệu A, trang PDF 12: Doanh thu thuần về bán hàng và cung cấp dịch vụ (mã số 10), 01/01/2025-30/06/2025",
+      "revenue_ytd_prior_comparable": "23,325,685,794,923 · tài liệu A, trang PDF 18: Thuyết minh 1: doanh thu thuần 6 tháng 2025, số liệu không hợp nhất FTEL là công ty con",
+      "revenue_fy_prior": "70,112,825,100,710 · tài liệu B, trang PDF 12: Doanh thu thuần về bán hàng và cung cấp dịch vụ (mã số 10), năm 2025",
+      "cash": "8,843,161,132,730 · tài liệu A, trang PDF 8: Tiền và các khoản tương đương tiền (mã số 110), 30/06/2026",
+      "short_term_investments": "20,128,417,972,525 · tài liệu A, trang PDF 8: Các khoản đầu tư tài chính ngắn hạn (mã số 120), 30/06/2026",
+      "short_term_debt": "16,368,916,886,521 · tài liệu A, trang PDF 10: Vay và nợ thuê tài chính ngắn hạn (mã số 321), 30/06/2026",
+      "long_term_debt": "2,080,610,610,531 · tài liệu A, trang PDF 10: Vay và nợ thuê tài chính dài hạn (mã số 339), 30/06/2026",
+      "minorities": "1,144,217,283,327 · tài liệu A, trang PDF 11: Lợi ích cổ đông không kiểm soát (mã số 429), 30/06/2026",
+      "associates": "9,994,654,773,920 · tài liệu A, trang PDF 9: Đầu tư vào công ty liên doanh, liên kết (mã số 262), 30/06/2026",
+      "shares_outstanding": "1,703,507,121 · tài liệu A, trang PDF 51: Thuyết minh 25b: cổ phiếu đang lưu hành, 30/06/2026",
+      "shares_outstanding_current": "1,885,727,648 · tài liệu C, trang PDF 2: Điều 1: tổng số cổ phần sau thay đổi vốn, thời điểm thay đổi vốn 30/9/2026"
+    },
+    "gia": "55,400 VND/cp ngày 2026-10-27 (https://fpt.com/vi/nha-dau-tu/thong-tin-co-phieu)"
+  },
+  "_canh_bao": [
+    "Từ 01/01/2026 FPT chuyển Công ty CP Viễn thông FPT (FTEL) từ hợp nhất toàn bộ sang phương pháp vốn chủ sở hữu (tài liệu A, trang PDF 12 chú thích (i) và trang 17). Số liệu năm 2025 vẫn hợp nhất FTEL; khoản đầu tư vào FTEL nay nằm trong đầu tư liên kết.",
+    "Từ 2026 áp dụng Thông tư 99/2025/TT-BTC thay Thông tư 200: một số mã số chỉ tiêu thay đổi (tài liệu A, trang PDF 19).",
+    "Sau 30/06/2026: vốn điều lệ 17.143.264.220.000 đồng trước đợt thưởng (đã gồm ESOP tháng 7/2026), phát hành thêm 171.401.226 cổ phiếu từ nguồn vốn chủ sở hữu, hoàn tất 30/09/2026 (tài liệu C, trang PDF 2).",
+    "BCTC quý 3/2026 chưa có trên trang nhà đầu tư của FPT tại ngày 27/10/2026; kỳ gần nhất dùng được là bán niên 2026.",
+    "Lãi từ công ty liên doanh, liên kết 6 tháng 2026 là 1.423.398.496.350 đồng (tài liệu A, trang PDF 12, mã số 27): khi đặt biên EBIT, không tính khoản này vì đã cộng giá trị đầu tư liên kết vào vốn chủ.",
+    "Phạm vi hợp nhất thay đổi: phần 6 tháng còn lại của năm trước được quy đổi theo tỷ lệ cùng kỳ trình bày lại (71.4%). Doanh thu TTM là ước tính.",
+    "Số cổ phiếu thay đổi sau ngày 2026-06-30: 1,703,507,121 → 1,885,727,648 cp. Dùng số mới nhất để khớp với giá hiện tại."
+  ]
+}
