@@ -1,0 +1,35 @@
+{
+  "demo": true,
+  "company": "DEMO Co (công ty giả định)",
+  "ticker": "DEMO",
+  "sector": "Hàng tiêu dùng",
+  "as_of": "2026-10-27",
+
+  "price": 22000,
+  "shares_mn": 500,
+  "revenue": 10000,
+  "net_debt": 1500,
+
+  "years": 10,
+  "high_growth_years": 5,
+  "growth_start": 0.10,
+  "growth_terminal": 0.035,
+  "margin_start": 0.10,
+  "margin_target": 0.12,
+  "tax_rate": 0.20,
+  "roic": 0.14,
+  "roic_terminal": 0.11,
+
+  "wacc": {
+    "rf": 0.04,
+    "erp": 0.075,
+    "beta": 1.0,
+    "cost_of_debt": 0.085,
+    "debt": 2000
+  },
+
+  "scenarios": {
+    "bear": { "growth_start": 0.05, "margin_target": 0.10, "roic_terminal": 0.09 },
+    "bull": { "growth_start": 0.14, "margin_target": 0.14, "roic_terminal": 0.13 }
+  }
+}

@@ -1,0 +1,168 @@
+import copy
+import sys
+import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from valuation import dcf  # noqa: E402
+
+
+def make_inputs(**over):
+    base = {
+        "company": "Test Co",
+        "ticker": "TEST",
+        "revenue": 1000.0,
+        "growth_start": 0.0,
+        "growth_terminal": 0.0,
+        "margin_start": 0.10,
+        "margin_target": 0.10,
+        "tax_rate": 0.20,
+        "roic": 0.15,
+        "roic_terminal": 0.15,
+        "net_debt": 0.0,
+        "shares_mn": 100.0,
+        "price": 10000.0,
+        "years": 10,
+        "high_growth_years": 5,
+        "wacc": {"override": 0.10},
+    }
+    base.update(over)
+    return base
+
+
+class TestEngine(unittest.TestCase):
+    def test_zero_growth_is_perpetuity(self):
+        # Không tăng trưởng, không tái đầu tư: EV = NOPAT / WACC
+        inp = make_inputs()
+        nopat = 1000 * 0.10 * 0.80
+        res = dcf.value(inp)
+        self.assertAlmostEqual(res["ev"], nopat / 0.10, places=6)
+
+    def test_growth_is_worthless_when_roic_equals_wacc(self):
+        # Khi ROIC = WACC, tăng trưởng không tạo giá trị: EV = NOPAT năm 1 / WACC
+        g = 0.05
+        inp = make_inputs(
+            growth_start=g,
+            growth_terminal=g,
+            roic=0.10,
+            roic_terminal=0.10,
+        )
+        nopat1 = 1000 * (1 + g) * 0.10 * 0.80
+        res = dcf.value(inp)
+        self.assertAlmostEqual(res["ev"], nopat1 / 0.10, places=6)
+
+    def test_growth_creates_value_when_roic_above_wacc(self):
+        low = dcf.value(make_inputs(growth_start=0.0, growth_terminal=0.0))["ev"]
+        high = dcf.value(make_inputs(growth_start=0.06, growth_terminal=0.03, roic_terminal=0.15))["ev"]
+        self.assertGreater(high, low)
+
+    def test_growth_destroys_value_when_roic_below_wacc(self):
+        flat = dcf.value(make_inputs(roic=0.06, roic_terminal=0.06))["ev"]
+        grow = dcf.value(make_inputs(growth_start=0.08, growth_terminal=0.03, roic=0.06, roic_terminal=0.06))["ev"]
+        self.assertLess(grow, flat)
+
+    def test_wacc_must_exceed_terminal_growth(self):
+        inp = make_inputs(growth_terminal=0.10)
+        with self.assertRaises(dcf.InputError):
+            dcf.value(inp)
+
+    def test_net_debt_and_per_share(self):
+        inp = make_inputs(net_debt=200.0)
+        res = dcf.value(inp)
+        self.assertAlmostEqual(res["equity"], res["ev"] - 200.0)
+        self.assertAlmostEqual(res["per_share"], res["equity"] * 1000 / 100.0)
+
+    def test_wacc_components(self):
+        inp = make_inputs(
+            wacc={"rf": 0.04, "erp": 0.07, "beta": 1.2, "cost_of_debt": 0.09, "equity_weight": 0.8},
+        )
+        w = dcf.compute_wacc(inp)
+        ke = 0.04 + 1.2 * 0.07
+        kd = 0.09 * (1 - 0.20)
+        self.assertAlmostEqual(w["ke"], ke)
+        self.assertAlmostEqual(w["wacc"], 0.8 * ke + 0.2 * kd)
+
+    def test_market_weights_from_price(self):
+        inp = make_inputs(
+            net_debt=50.0,
+            price=5000.0,  # vốn hóa = 5000 * 100 / 1000 = 500
+            wacc={"rf": 0.04, "erp": 0.07, "beta": 1.0, "cost_of_debt": 0.08, "debt": 500.0},
+        )
+        w = dcf.compute_wacc(inp)
+        self.assertAlmostEqual(w["we"], 0.5)
+
+    def test_sensitivity_monotonic_in_wacc(self):
+        inp = make_inputs(growth_start=0.06, growth_terminal=0.03)
+        s = dcf.sensitivity(inp)
+        mid = len(s["gs"]) // 2
+        col = [row[mid] for row in s["grid"]]
+        self.assertEqual(col, sorted(col, reverse=True))
+
+    def test_reverse_dcf_round_trip(self):
+        inp = make_inputs(growth_start=0.08, growth_terminal=0.03)
+        target = dcf.value(inp)["per_share"]
+        probe = copy.deepcopy(inp)
+        probe["growth_start"] = 0.0
+        probe["price"] = target
+        rv = dcf.reverse_dcf(probe)
+        self.assertEqual(rv["status"], "ok")
+        self.assertAlmostEqual(rv["growth"], 0.08, places=4)
+
+    def test_reverse_dcf_without_price(self):
+        inp = make_inputs()
+        inp.pop("price")
+        rv = dcf.reverse_dcf(inp)
+        self.assertIsNone(rv["growth"])
+        self.assertEqual(rv["status"], "no_price")
+
+    def test_reverse_dcf_price_above_reachable_range(self):
+        # Giá cao gấp nhiều lần mọi giá trị đạt được khi tăng trưởng nằm trong [-10%, 40%]
+        inp = make_inputs(growth_start=0.05, growth_terminal=0.03, price=1_000_000.0)
+        rv = dcf.reverse_dcf(inp)
+        self.assertEqual(rv["status"], "above_range")
+        self.assertIsNone(rv["growth"])
+
+    def test_reverse_dcf_price_below_reachable_range(self):
+        inp = make_inputs(growth_start=0.05, growth_terminal=0.03, price=1.0)
+        rv = dcf.reverse_dcf(inp)
+        self.assertEqual(rv["status"], "below_range")
+
+    def test_margin_of_safety(self):
+        self.assertAlmostEqual(dcf.margin_of_safety(100.0, 70.0), 0.30)
+        self.assertLess(dcf.margin_of_safety(100.0, 130.0), 0)
+        self.assertIsNone(dcf.margin_of_safety(-5.0, 10.0))
+
+    def test_validate_reports_missing_fields(self):
+        inp = make_inputs()
+        inp.pop("revenue")
+        self.assertTrue(any("revenue" in e for e in dcf.validate(inp)))
+
+    def test_validate_requires_price_or_weight(self):
+        inp = make_inputs(wacc={"rf": 0.04, "erp": 0.07, "beta": 1.0, "cost_of_debt": 0.08})
+        inp.pop("price")
+        self.assertTrue(any("price" in e for e in dcf.validate(inp)))
+
+    def test_scenarios_only_run_when_defined(self):
+        inp = make_inputs(growth_start=0.06, growth_terminal=0.03)
+        inp["scenarios"] = {"bear": {"growth_start": 0.02}, "bull": {"growth_start": 0.10}}
+        sc = dcf.scenarios(inp)
+        self.assertLess(sc["bear"]["per_share"], sc["base"]["per_share"])
+        self.assertGreater(sc["bull"]["per_share"], sc["base"]["per_share"])
+        sc2 = dcf.scenarios(make_inputs())
+        self.assertIsNone(sc2["bear"])
+        self.assertIsNotNone(sc2["base"])
+
+    def test_financial_sector_flag(self):
+        inp = make_inputs(sector="Ngân hàng")
+        res = dcf.value(inp)
+        self.assertTrue(any("tài chính" in f for f in dcf.flags(inp, res)))
+
+    def test_terminal_value_share_flag(self):
+        inp = make_inputs(growth_start=0.06, growth_terminal=0.04, roic_terminal=0.30)
+        res = dcf.value(inp)
+        self.assertGreater(res["tv_share"], 0.5)
+
+
+if __name__ == "__main__":
+    unittest.main()

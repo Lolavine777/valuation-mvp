@@ -1,0 +1,49 @@
+{
+  "_ghi_chu": "Sao chép file này thành inputs/<MA>.json. Tiền: tỷ VND. Số cổ phiếu: triệu cp. Giá: VND/cp. Tỷ lệ: 0.10 = 10%. Xóa các trường bắt đầu bằng dấu gạch dưới nếu muốn.",
+
+  "company": "Tên công ty",
+  "ticker": "MA",
+  "sector": "Ngành (nếu là ngân hàng, bảo hiểm, chứng khoán, bất động sản thì mô hình này KHÔNG phù hợp)",
+  "as_of": "YYYY-MM-DD",
+
+  "price": 0,
+  "_price": "Giá thị trường hiện tại, VND/cp. Cần để tính biên an toàn và reverse DCF.",
+  "shares_mn": 0,
+  "_shares_mn": "Số cổ phiếu đang lưu hành, triệu cp.",
+  "revenue": 0,
+  "_revenue": "Doanh thu thuần 12 tháng gần nhất (TTM), tỷ VND. Lấy từ báo cáo kết quả kinh doanh.",
+  "net_debt": 0,
+  "_net_debt": "Nợ vay có lãi trừ tiền và tương đương tiền (và đầu tư ngắn hạn), tỷ VND. Có thể âm nếu dư tiền.",
+  "minorities": 0,
+  "_minorities": "Lợi ích cổ đông không kiểm soát, tỷ VND (không bắt buộc, mặc định 0).",
+
+  "years": 10,
+  "high_growth_years": 5,
+  "_years": "Tổng số năm dự phóng, và số năm đầu giữ tăng trưởng cao. Các năm còn lại giảm dần về tăng trưởng dài hạn.",
+  "growth_start": 0.0,
+  "_growth_start": "Tăng trưởng doanh thu hằng năm trong giai đoạn đầu. Đây là giả định phán đoán quan trọng nhất.",
+  "growth_terminal": 0.0,
+  "_growth_terminal": "Tăng trưởng dài hạn (vĩnh viễn). Không nên cao hơn lãi suất phi rủi ro.",
+  "margin_start": 0.0,
+  "margin_target": 0.0,
+  "_margin": "Biên EBIT hiện tại và biên EBIT mục tiêu đạt được sau high_growth_years. Muốn đổi biên thì cần luận điểm cụ thể.",
+  "tax_rate": 0.20,
+  "roic": 0.0,
+  "roic_terminal": 0.0,
+  "_roic": "ROIC giai đoạn tăng trưởng và ROIC dài hạn. Tái đầu tư = tăng trưởng / ROIC. ROIC dài hạn nên tiến gần WACC trừ khi có lợi thế cạnh tranh bền vững.",
+
+  "wacc": {
+    "rf": 0.0,
+    "erp": 0.0,
+    "beta": 1.0,
+    "cost_of_debt": 0.0,
+    "debt": 0,
+    "_wacc": "Ke = rf + beta*erp (erp đã gồm phần bù rủi ro quốc gia). Tỷ trọng vốn theo giá thị trường. Hoặc thay bằng: { \"override\": 0.11 }. Hoặc thêm \"equity_weight\" nếu không có giá."
+  },
+
+  "scenarios": {
+    "bear": { "growth_start": 0.0 },
+    "bull": { "growth_start": 0.0 },
+    "_scenarios": "Ghi đè bất kỳ giả định nào trong: growth_start, growth_terminal, margin_start, margin_target, roic, roic_terminal, high_growth_years, years, wacc_override."
+  }
+}
