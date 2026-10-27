@@ -21,6 +21,7 @@ Mọi phép tính do `tools/draft_input.py` làm. Không tự tính TTM, nợ r�
    - Công bố thông tin sau ngày kết thúc kỳ về thay đổi số cổ phiếu: cổ phiếu thưởng, cổ tức bằng cổ phiếu, ESOP, chào bán, mua cổ phiếu quỹ.
      Có thì tải văn bản ghi tổng số cổ phiếu mới, thường là nghị quyết HĐQT về tăng vốn điều lệ.
    - Giá đóng cửa gần nhất có ghi ngày, ưu tiên trang thông tin cổ phiếu của chính công ty.
+   - VN-Index đóng cửa cùng ngày với giá, đối chiếu ít nhất hai nguồn. Nhật ký kiểm chứng cần số này.
 
 3. **Đọc số.** Bảng cân đối và kết quả kinh doanh thường ở khoảng trang PDF 5-15.
    Thuyết minh vốn chủ sở hữu (số cổ phiếu đang lưu hành) nằm ở nửa sau báo cáo.

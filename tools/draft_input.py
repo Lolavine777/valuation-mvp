@@ -94,6 +94,14 @@ def check(ex: dict) -> list[str]:
             errors.append("price.date phải có dạng YYYY-MM-DD")
         if not price.get("source"):
             errors.append("price.source: ghi nguồn giá (URL)")
+        vni = ex.get("vnindex")
+        if vni is not None:
+            if not isinstance(vni, dict) or not dcf._is_number(vni.get("value")) or vni["value"] <= 0:
+                errors.append("vnindex.value phải là số > 0 (điểm)")
+            elif vni.get("date") != price.get("date"):
+                errors.append("vnindex.date phải trùng price.date: nhật ký so sánh giá và VN-Index cùng một phiên")
+            elif not vni.get("source"):
+                errors.append("vnindex.source: ghi nguồn (URL)")
     return errors
 
 
@@ -151,13 +159,19 @@ def compute(ex: dict) -> tuple[dict[str, Any], list[str]]:
         "net_debt": round(net_debt, 1),
         "minorities": round(_ty(ex, "minorities"), 1),
         "associates": round(_ty(ex, "associates"), 1),
+        # Luôn ghi, kể cả None: giữ VN-Index cũ bên cạnh giá mới sẽ làm sai nhật ký kiểm chứng.
+        "vnindex": ex["vnindex"]["value"] if ex.get("vnindex") else None,
     }
+    if data["vnindex"] is None:
+        warnings.append("Chưa có VN-Index cùng ngày với giá: nhật ký kiểm chứng sẽ thiếu mốc so sánh.")
     return data, warnings
 
 
 def _sources(ex: dict) -> dict[str, Any]:
     """Ghi lại nguồn của từng con số để kiểm chứng sau này."""
+    vni = ex.get("vnindex")
     return {
+        "vnindex": f"{vni['value']:,} điểm ngày {vni['date']} ({vni['source']})" if vni else "",
         "lay_ngay": dt.date.today().isoformat(),
         "ky_bao_cao": f"{ex['months']} tháng kết thúc {ex['period_end']}",
         "tai_lieu": {k: f"{d.get('title', '')} ({d.get('source', '')})" for k, d in ex["documents"].items()},
@@ -231,6 +245,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  Đầu tư liên kết:        {data['associates']:>12,.1f} tỷ")
     print(f"  Số cổ phiếu:            {data['shares_mn']:>12,.3f} triệu")
     print(f"  Giá ({data['as_of']}): {data['price']:>12,.0f} VND/cp")
+    if data["vnindex"] is not None:
+        print(f"  VN-Index cùng ngày:     {data['vnindex']:>12,.2f} điểm")
     if warnings:
         print("\nCảnh báo:")
         for w in warnings:

@@ -22,6 +22,7 @@ Nếu file đã có, script chỉ cập nhật số liệu và giữ nguyên cá
 2. Nếu kỳ gần nhất không phải cả năm: BCTC hợp nhất năm gần nhất trước đó (đã kiểm toán).
 3. Nếu sau ngày kết thúc kỳ có phát hành thêm hoặc mua lại cổ phiếu (cổ phiếu thưởng, cổ tức bằng cổ phiếu, ESOP, chào bán): công bố thông tin chính thức ghi số cổ phiếu mới.
 4. Giá đóng cửa gần nhất từ một trang công khai, ưu tiên trang nhà đầu tư của chính công ty, có ghi ngày.
+5. VN-Index đóng cửa **cùng ngày** với giá, để nhật ký kiểm chứng so sánh với việc chỉ giữ chỉ số.
 
 ## Prompt
 
@@ -53,6 +54,7 @@ Các trường trong "values" (mỗi trường: value, doc, page, line = tên ch
 - shares_outstanding_current: CHỈ điền khi có tài liệu số 3. Tổng số cổ phiếu sau thay đổi, trừ cổ phiếu quỹ nếu có.
 
 "price": giá đóng cửa, đơn vị VND/cổ phiếu, kèm "date" (YYYY-MM-DD) và "source" (URL).
+"vnindex": VN-Index đóng cửa (điểm) cùng ngày với price, kèm "date" và "source". Không tìm thấy thì bỏ trường này.
 
 "notes": liệt kê ngắn mọi điều làm số liệu khó so sánh hoặc cần người xem lại: thay đổi phạm vi hợp nhất, trình bày lại số liệu,
 ý kiến kiểm toán/soát xét không phải chấp nhận toàn phần, sự kiện sau ngày kết thúc kỳ ảnh hưởng tới số cổ phiếu hoặc nợ.
@@ -73,6 +75,7 @@ Trả về DUY NHẤT một JSON theo mẫu sau, không kèm giải thích:
     "revenue_ytd": {"value": 0, "doc": "A", "page": 0, "line": "Doanh thu thuần về bán hàng và cung cấp dịch vụ"}
   },
   "price": {"value": 0, "date": "YYYY-MM-DD", "source": "URL"},
+  "vnindex": {"value": 0, "date": "YYYY-MM-DD", "source": "URL"},
   "notes": []
 }
 ```

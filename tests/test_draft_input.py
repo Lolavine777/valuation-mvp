@@ -43,6 +43,7 @@ def make_extraction(**over):
             "shares_outstanding": cite(100_000_000, page=47),
         },
         "price": {"value": 30000, "date": "2026-10-27", "source": "https://example.com/gia"},
+        "vnindex": {"value": 1700.5, "date": "2026-10-27", "source": "https://example.com/vni"},
         "notes": [],
     }
     ex.update(over)
@@ -97,6 +98,7 @@ class TestCompute(unittest.TestCase):
             "thiếu số năm trước": lambda ex: ex["values"].pop("revenue_fy_prior"),
             "giá không có nguồn": lambda ex: ex["price"].pop("source"),
             "months lạ": lambda ex: ex.update(months=7),
+            "VN-Index khác ngày với giá": lambda ex: ex["vnindex"].update(date="2026-10-26"),
         }
         for name, mutate in cases.items():
             with self.subTest(name):
@@ -110,6 +112,14 @@ class TestCompute(unittest.TestCase):
         ex["values"]["revenue_ytd_prior"] = cite(1200e9)  # thường do nhầm cột hoặc đơn vị
         with self.assertRaisesRegex(di.ExtractionError, "revenue_ytd_prior"):
             di.compute(ex)
+
+    def test_vnindex_optional_but_flagged(self):
+        self.assertEqual(di.compute(make_extraction())[0]["vnindex"], 1700.5)
+        ex = make_extraction()
+        ex.pop("vnindex")
+        data, warnings = di.compute(ex)
+        self.assertIsNone(data["vnindex"])
+        self.assertTrue(any("VN-Index" in w for w in warnings))
 
     def test_negative_minorities_allowed(self):
         ex = make_extraction()
@@ -158,6 +168,15 @@ class TestDraft(unittest.TestCase):
         self.assertEqual(doc["growth_start"], 0.12)
         self.assertEqual(doc["wacc"]["beta"], 1.3)
         self.assertAlmostEqual(doc["net_debt"], 200 + 30 - 150 - 50)
+
+    def test_rerun_without_vnindex_clears_stale_value(self):
+        # VN-Index cũ đứng cạnh giá mới sẽ làm sai nhật ký kiểm chứng
+        with tempfile.TemporaryDirectory() as d:
+            di.draft(make_extraction(), Path(d))
+            ex = make_extraction(price={"value": 31000, "date": "2026-11-27", "source": "https://example.com/gia"})
+            ex.pop("vnindex")
+            out, _, _ = di.draft(ex, Path(d))
+            self.assertIsNone(json.loads(out.read_text(encoding="utf-8"))["vnindex"])
 
     def test_cli_reports_error_without_traceback(self):
         ex = make_extraction()

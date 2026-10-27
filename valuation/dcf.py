@@ -44,7 +44,16 @@ SCENARIO_KEYS = (
     "years",
 )
 
-NUMERIC_KEYS = SCENARIO_KEYS + ("revenue", "tax_rate", "net_debt", "shares_mn", "price", "minorities", "associates")
+NUMERIC_KEYS = SCENARIO_KEYS + (
+    "revenue",
+    "tax_rate",
+    "net_debt",
+    "shares_mn",
+    "price",
+    "minorities",
+    "associates",
+    "vnindex",
+)
 WACC_NUMERIC_KEYS = ("rf", "erp", "beta", "cost_of_debt", "debt", "equity_weight", "override")
 
 FINANCIAL_KEYWORDS = (

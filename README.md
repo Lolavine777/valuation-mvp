@@ -12,7 +12,8 @@ Cần Python 3.10 trở lên. Không cần cài gì thêm.
 
 ```bash
 python3 -m valuation inputs/demo.json            # in memo ra màn hình
-python3 -m valuation inputs/demo.json --save     # lưu vào journal/<ngày>_<mã>.md
+python3 -m valuation inputs/demo.json --save     # lưu vào journal/<ngày>_<mã>.md (demo không ghi nhật ký)
+python3 -m valuation.journal report              # nhật ký kiểm chứng: so với VN-Index, các mốc cần điền
 python3 -m unittest discover -s tests            # chạy toàn bộ test
 ```
 
@@ -30,9 +31,24 @@ python3 -m unittest discover -s tests            # chạy toàn bộ test
 3. Điền **giả định phán đoán**: tăng trưởng, biên EBIT, ROIC, beta, ERP, lãi suất phi rủi ro.
    Chỗ này là nơi giá trị được quyết định, và là việc của người, không phải của công cụ.
 4. Chạy, đọc memo, điền phần 7 (luận điểm, điều gì sẽ làm mình sai, căn cứ từng giả định).
-5. Lưu bằng `--save`, xem lại sau 6 và 12 tháng.
+5. Lưu bằng `--save`. Memo vào `journal/<ngày>_<mã>.md`, một dòng vào nhật ký kiểm chứng `journal/log.csv`.
+6. Sau 6 và 12 tháng, điền giá và VN-Index lúc đó (xem mục dưới) và xem lại giả định nào đúng, giả định nào sai.
 
 Chạy lại `/bctc` hoặc `tools.draft_input` khi có BCTC mới: chỉ số liệu được cập nhật, giả định bạn đã điền được giữ nguyên.
+
+## Nhật ký kiểm chứng: công cụ có giúp ích không?
+
+Mục đích là trả lời bằng dữ liệu của chính bạn: các mã bạn định giá có làm tốt hơn việc chỉ giữ VN-Index không.
+
+- Mỗi lần `--save` một công ty thật, `journal/log.csv` có thêm một dòng: mã, ngày, giá, giá trị bear/base/bull, biên an toàn, VN-Index.
+  VN-Index lấy từ trường `vnindex` trong file đầu vào (`/bctc` điền sẵn) hoặc từ `--vnindex`.
+- `python3 -m valuation.journal report` in bảng so sánh, tổng hợp theo nhóm giá dưới hay trên base lúc ghi, và các mốc đã đến hạn kèm lệnh để điền.
+- Điền một mốc: `python3 -m valuation.journal update FPT 2026-10-27 --at 6 --price 61000 --vnindex 1812.5`.
+  Nếu giữa chừng có thưởng cổ phiếu hoặc chia tách, thêm `--share-factor` (thưởng 10:1 là 1.1) để giá trước và sau so được với nhau.
+- Trong Claude Code: gõ `/nhatky`. Skill tìm giá, VN-Index và các sự kiện quyền rồi điền giúp.
+
+So sánh theo giá, không gồm cổ tức tiền mặt ở cả hai bên (VN-Index cũng là chỉ số giá).
+Dưới 10 mục ở mỗi mốc thì chưa kết luận được gì.
 
 ## Triết lý thiết kế (20/80)
 
@@ -88,14 +104,16 @@ tăng trưởng không tạo giá trị khi ROIC = WACC (xem `tests/test_dcf.py`
 valuation/dcf.py     engine tính toán (không I/O)
 valuation/memo.py    dựng memo Markdown
 valuation/cli.py     dòng lệnh
+valuation/journal.py nhật ký kiểm chứng (journal/log.csv): ghi, điền mốc 6/12 tháng, báo cáo
 inputs/              file JSON đầu vào (demo.json, TEMPLATE.json, <MA>.json)
 prompts/redflags.md  prompt cho LLM đọc báo cáo, đánh dấu bất thường
 prompts/extract_bctc.md  prompt cho LLM chép số liệu từ BCTC, kèm số trang
 tools/draft_input.py từ số liệu đã chép tạo inputs/<MA>.json (TTM, nợ ròng, đơn vị)
 sources/<MA>/        BCTC đã tải (PDF không commit) và extraction.json
 .claude/skills/bctc  lệnh /bctc trong Claude Code
+.claude/skills/nhatky  lệnh /nhatky trong Claude Code
 tests/               unittest
-journal/             memo đã lưu, để xem lại sau 6-12 tháng
+journal/             memo đã lưu và log.csv, để xem lại sau 6-12 tháng
 CLAUDE.md            bàn giao cho phiên Claude Code tiếp theo
 START_HERE.md        cách cài Claude Code và câu lệnh đầu tiên
 ```

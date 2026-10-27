@@ -43,9 +43,10 @@ Các giả định phán đoán của FPT chưa được điền.
    - **Không gọi API nội bộ của Vietcap hay công ty chứng khoán.** Claude Code chặn vì là lách kiểm soát truy cập, kể cả khi người dùng đồng ý.
    - API chính thức: SSI FastConnect Data miễn phí nhưng chỉ có giá, chỉ số và số cổ phiếu niêm yết, không có BCTC.
      FiinQuant và EODHD có BCTC nhưng trả phí và cần đăng ký. Người dùng chưa muốn đăng ký; có thể xem lại sau.
-2. **Nhật ký kiểm chứng**: một file CSV nhỏ (`journal/log.csv`) ghi mã, ngày, giá, giá trị base/bear/bull,
-   VN-Index lúc đó; một lệnh để điền giá và VN-Index tại mốc 6/12 tháng và in so sánh. Mục đích: biết công cụ
-   có giúp ích hay không, so với việc chỉ giữ chỉ số.
+2. **Nhật ký kiểm chứng: đã xong** (`valuation/journal.py`, `/nhatky`). `--save` ghi một dòng vào `journal/log.csv`
+   (demo không ghi); `python3 -m valuation.journal report|update` để xem và điền mốc 6/12 tháng.
+   So sánh theo giá, có điều chỉnh thưởng/chia tách qua `--share-factor`, không gồm cổ tức tiền mặt ở cả hai bên.
+   Hướng mở rộng khi có đủ mục: tính cả cổ tức tiền mặt (cần VN-Index tổng lợi nhuận, VNINDEX-TR, nếu có nguồn chính thức).
 3. **(Tùy chọn) `tools/redflags.py`**: chạy `prompts/redflags.md` trên một thư mục PDF/văn bản bằng LLM API.
    Bắt buộc có trích dẫn và số trang; in cảnh báo rằng đầu ra phải được kiểm chứng. Chỉ làm khi người dùng đã
    thử prompt thủ công và thấy hữu ích.
@@ -61,4 +62,6 @@ Lý do đã thảo luận: bằng chứng ủng hộ yếu, dễ tự lừa mìn
 python3 -m unittest discover -s tests
 python3 -m valuation inputs/demo.json
 python3 -m valuation inputs/demo.json --save
+python3 -m tools.draft_input sources/<MA>/extraction.json
+python3 -m valuation.journal report
 ```

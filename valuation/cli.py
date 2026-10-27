@@ -8,7 +8,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from . import dcf
+from . import dcf, journal
 from .memo import build_memo
 
 
@@ -22,8 +22,13 @@ def _clean(obj):
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="valuation", description="Định giá DCF tối giản, xuất memo Markdown.")
     parser.add_argument("input", help="file JSON đầu vào, ví dụ inputs/demo.json")
-    parser.add_argument("--save", action="store_true", help="lưu memo vào journal/<ngày>_<mã>.md")
+    parser.add_argument(
+        "--save", action="store_true", help="lưu memo vào journal/<ngày>_<mã>.md và ghi một dòng vào journal/log.csv"
+    )
     parser.add_argument("--journal", default="journal", help="thư mục nhật ký (mặc định: journal)")
+    parser.add_argument(
+        "--vnindex", type=float, help="VN-Index đóng cửa ngày as_of, ghi vào nhật ký (mặc định: trường vnindex trong file)"
+    )
     args = parser.parse_args(argv)
 
     if hasattr(sys.stdout, "reconfigure"):
@@ -55,6 +60,22 @@ def main(argv: list[str] | None = None) -> int:
         out = out_dir / f"{d}_{inp['ticker']}.md"
         out.write_text(memo, encoding="utf-8")
         print(f"\n[Đã lưu: {out}]", file=sys.stderr)
+        if inp.get("demo"):
+            print("[Dữ liệu minh họa: không ghi vào nhật ký kiểm chứng]", file=sys.stderr)
+            return 0
+        vnindex = args.vnindex if args.vnindex is not None else inp.get("vnindex")
+        if vnindex is not None and vnindex <= 0:
+            print("--vnindex phải > 0", file=sys.stderr)
+            return 1
+        log = out_dir / "log.csv"
+        added = journal.record(log, journal.entry(analysis, d, vnindex, out))
+        print(f"[{'Đã thêm vào' if added else 'Đã cập nhật'} nhật ký kiểm chứng: {log}]", file=sys.stderr)
+        if vnindex is None:
+            print(
+                f"[Thiếu VN-Index ngày {d}. Bổ sung: python3 -m valuation.journal --file {log} "
+                f"update {inp['ticker']} {d} --at 0 --vnindex <điểm>]",
+                file=sys.stderr,
+            )
     return 0
 
 

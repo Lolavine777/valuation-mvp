@@ -8,6 +8,8 @@
 
   "price": 0,
   "_price": "Giá thị trường hiện tại, VND/cp. Cần để tính biên an toàn và reverse DCF.",
+  "vnindex": null,
+  "_vnindex": "VN-Index đóng cửa cùng ngày với giá (as_of). Được ghi vào journal/log.csv khi lưu memo bằng --save, để sau 6 và 12 tháng so sánh với việc chỉ giữ chỉ số.",
   "shares_mn": 0,
   "_shares_mn": "Số cổ phiếu đang lưu hành, triệu cp.",
   "revenue": 0,

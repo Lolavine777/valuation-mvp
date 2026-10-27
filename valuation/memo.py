@@ -198,7 +198,8 @@ def build_memo(a: dict[str, Any]) -> str:
     L.append("")
     L.append(
         f"**Xem lại vào:** {add_months(d, 6).isoformat()} (6 tháng) và {add_months(d, 12).isoformat()} (12 tháng). "
-        "Ghi lại: giá lúc đó, VN-Index lúc đó, giả định nào đúng, giả định nào sai."
+        "Ghi lại giả định nào đúng, giả định nào sai. Giá và VN-Index lúc đó điền vào nhật ký: "
+        "`python3 -m valuation.journal report` liệt kê các mốc đến hạn."
     )
     L.append("")
     return "\n".join(L)
