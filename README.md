@@ -126,4 +126,5 @@ tests/               unittest
 journal/             memo đã lưu và log.csv, để xem lại sau 6-12 tháng
 CLAUDE.md            bàn giao cho phiên Claude Code tiếp theo
 docs/claude-code-setup.md  cách cài Claude Code và câu lệnh đầu tiên
+docs/threat-model.md       rủi ro khi LLM đọc tài liệu bên ngoài và các lớp phòng thủ
 ```
