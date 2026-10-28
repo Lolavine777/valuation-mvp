@@ -180,6 +180,11 @@ class TestEngine(unittest.TestCase):
         res = dcf.value(inp)
         self.assertTrue(any("tài chính" in f for f in dcf.flags(inp, res)))
 
+    def test_financial_flag_uses_company_name_when_sector_is_blank(self):
+        inp = make_inputs(sector="", company="Ngân hàng TMCP Test")
+        res = dcf.value(inp)
+        self.assertTrue(any("tài chính" in f for f in dcf.flags(inp, res)))
+
     def test_terminal_value_share_flag(self):
         inp = make_inputs(growth_terminal=0.045, roic_terminal=0.30, wacc={"override": 0.06})
         res = dcf.value(inp)

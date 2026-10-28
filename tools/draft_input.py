@@ -37,6 +37,14 @@ JUDGMENTS = ("growth_start", "growth_terminal", "margin_start", "margin_target",
 WACC_JUDGMENTS = ("rf", "erp", "cost_of_debt")
 
 
+MAX_TEXT = 120
+MARKDOWN_CHARS = "#*_`[]<>|!\\"
+
+
+def _plain_text(v: Any) -> bool:
+    return isinstance(v, str) and len(v) <= MAX_TEXT and v.isprintable() and not any(c in MARKDOWN_CHARS for c in v)
+
+
 class ExtractionError(ValueError):
     """File trích xuất sai hoặc thiếu."""
 
@@ -62,6 +70,11 @@ def check(ex: dict) -> list[str]:
         errors.append("ticker chỉ gồm chữ và số")
     if not ex.get("company"):
         errors.append("thiếu 'company'")
+    # Văn bản do LLM chép từ tài liệu bên ngoài sẽ vào memo: chỉ cho phép một dòng ngắn, không có cú pháp markdown.
+    for key in ("company", "sector"):
+        text = ex.get(key)
+        if text is not None and not _plain_text(text):
+            errors.append(f"{key} phải là một dòng chữ thường, tối đa {MAX_TEXT} ký tự, không chứa {MARKDOWN_CHARS}")
     if not _is_date(ex.get("period_end")):
         errors.append("period_end phải có dạng YYYY-MM-DD")
     months = ex.get("months")

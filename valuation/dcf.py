@@ -384,9 +384,10 @@ def flags(inp: dict, res: dict) -> list[str]:
     out: list[str] = []
     wacc = res["wacc"]["wacc"]
     g_term = inp["growth_terminal"]
-    sector = str(inp.get("sector", "")).lower()
+    # Xét cả tên công ty: ô sector có thể trống hoặc bị điền sai khi số liệu do LLM chép từ tài liệu.
+    identity = f"{inp.get('sector', '')} {inp.get('company', '')}".lower()
 
-    if any(k in sector for k in FINANCIAL_KEYWORDS):
+    if any(k in identity for k in FINANCIAL_KEYWORDS):
         out.append(
             "Ngành tài chính hoặc bất động sản: FCFF này không phù hợp (nợ là nguyên liệu kinh doanh). "
             "Nên dùng P/B và ROE, mô hình thu nhập thặng dư hoặc NAV. Coi kết quả chỉ để tham khảo."

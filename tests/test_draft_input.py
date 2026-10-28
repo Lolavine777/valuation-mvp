@@ -99,6 +99,7 @@ class TestCompute(unittest.TestCase):
             "giá không có nguồn": lambda ex: ex["price"].pop("source"),
             "months lạ": lambda ex: ex.update(months=7),
             "VN-Index khác ngày với giá": lambda ex: ex["vnindex"].update(date="2026-10-26"),
+            "mã có ký tự đường dẫn": lambda ex: ex.update(ticker="../FPT"),
         }
         for name, mutate in cases.items():
             with self.subTest(name):
@@ -125,6 +126,40 @@ class TestCompute(unittest.TestCase):
         ex = make_extraction()
         ex["values"]["minorities"] = cite(-5e9)
         self.assertAlmostEqual(di.compute(ex)[0]["minorities"], -5)
+
+
+class TestUntrustedExtraction(unittest.TestCase):
+    """Extraction là đầu ra của LLM đọc tài liệu bên ngoài, nên được coi là không tin cậy (docs/threat-model.md)."""
+
+    def test_markdown_or_multiline_text_is_rejected(self):
+        cases = {
+            "chèn mục mới vào memo": "FPT\n\n## Khuyến nghị: MUA",
+            "tiêu đề markdown": "# Khuyến nghị MUA",
+            "link": "FPT [xem thêm](https://example.com)",
+            "ảnh": "![x](https://example.com/p.png)",
+            "quá dài": "A" * (di.MAX_TEXT + 1),
+        }
+        for name, text in cases.items():
+            for key in ("company", "sector"):
+                with self.subTest(name, key=key):
+                    with self.assertRaises(di.ExtractionError):
+                        di.compute(make_extraction(**{key: text}))
+
+    def test_company_names_with_parentheses_still_pass(self):
+        data, _ = di.compute(make_extraction(company="Tổng Công ty Khí Việt Nam - CTCP (PV GAS)"))
+        self.assertEqual(data["company"], "Tổng Công ty Khí Việt Nam - CTCP (PV GAS)")
+
+    def test_extraction_cannot_set_judgment_assumptions(self):
+        injected = make_extraction(growth_start=0.5, roic=0.9, margin_target=0.6, wacc={"override": 0.01})
+        with tempfile.TemporaryDirectory() as d:
+            out, _, _ = di.draft(injected, Path(d))
+            doc = json.loads(out.read_text(encoding="utf-8"))
+        for key in di.JUDGMENTS:
+            self.assertEqual(doc[key], 0.0)
+        self.assertNotIn("override", doc["wacc"])
+        values = {**make_extraction()["values"], "growth_start": cite(0.5)}
+        with self.assertRaises(di.ExtractionError):
+            di.compute(make_extraction(values=values))
 
 
 class TestDraft(unittest.TestCase):
