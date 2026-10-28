@@ -1,5 +1,13 @@
 # valuation-mvp
 
+[![tests](https://github.com/Lolavine777/valuation-mvp/actions/workflows/test.yml/badge.svg)](https://github.com/Lolavine777/valuation-mvp/actions/workflows/test.yml)
+
+> **English summary.** A minimal DCF valuation tool for Vietnamese listed companies, built to make investment theses disciplined rather than to predict prices.
+> Deterministic Python (standard library only) does every calculation: FCFF, WACC, sensitivity tables, and reverse DCF.
+> An LLM only transcribes figures from the original financial statements, each with a page citation for quick checking; judgment assumptions stay with the human.
+> A verification journal compares every saved valuation against simply holding the VN-Index after 6 and 12 months.
+> Docs and memos are in Vietnamese. Not financial advice.
+
 Công cụ định giá DCF tối giản để lập **luận điểm đầu tư có kỷ luật** cho một doanh nghiệp.
 Nhập giả định → nhận memo một trang: khoảng giá trị, độ nhạy, thị trường đang kỳ vọng gì, cảnh báo.
 
@@ -115,5 +123,5 @@ sources/<MA>/        BCTC đã tải (PDF không commit) và extraction.json
 tests/               unittest
 journal/             memo đã lưu và log.csv, để xem lại sau 6-12 tháng
 CLAUDE.md            bàn giao cho phiên Claude Code tiếp theo
-START_HERE.md        cách cài Claude Code và câu lệnh đầu tiên
+docs/claude-code-setup.md  cách cài Claude Code và câu lệnh đầu tiên
 ```

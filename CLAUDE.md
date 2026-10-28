@@ -4,7 +4,7 @@
 
 Người dùng là một kỹ sư (nghiêng về AI/tech), mới bắt đầu học đầu tư, muốn có một công cụ **dùng cá nhân**
 để đầu tư có phương hướng theo trường phái định giá doanh nghiệp (DCF, value investing).
-Họ đang làm cùng một người bạn (Minh) đang học tài chính và đã có mô hình pro forma trên Excel.
+Họ đang làm cùng một người bạn đang học tài chính và đã có mô hình pro forma trên Excel.
 Người dùng nói tiếng Việt: giao tiếp, tài liệu và thông báo lỗi cho người dùng viết bằng tiếng Việt.
 
 Pain point đã chốt: đầu tư theo cảm tính, không có quy trình/luận điểm, không biết giá trị hợp lý,
