@@ -59,7 +59,9 @@ def main(argv: list[str] | None = None) -> int:
         out_dir.mkdir(parents=True, exist_ok=True)
         out = out_dir / f"{d}_{inp['ticker']}.md"
         out.write_text(memo, encoding="utf-8")
-        print(f"\n[Đã lưu: {out}]", file=sys.stderr)
+        # Bản chụp giả định để sau này so sánh bằng valuation.compare; memo Markdown không đọc ngược lại được.
+        out.with_suffix(".json").write_text(json.dumps(inp, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(f"\n[Đã lưu: {out} và bản chụp giả định {out.with_suffix('.json').name}]", file=sys.stderr)
         if inp.get("demo"):
             print("[Dữ liệu minh họa: không ghi vào nhật ký kiểm chứng]", file=sys.stderr)
             return 0

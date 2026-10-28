@@ -23,6 +23,7 @@ Muốn có lệnh `valuation` dùng ở mọi thư mục: `pipx install git+http
 python3 -m valuation inputs/demo.json            # in memo ra màn hình
 python3 -m valuation inputs/demo.json --save     # lưu vào journal/<ngày>_<mã>.md (demo không ghi nhật ký)
 python3 -m valuation.journal report              # nhật ký kiểm chứng: so với VN-Index, các mốc cần điền
+python3 -m valuation.compare DEMO                 # so hai bản lưu gần nhất của một mã (cần lưu ít nhất hai lần)
 python3 -m unittest discover -s tests            # chạy toàn bộ test
 ```
 
@@ -56,6 +57,9 @@ Mục đích là trả lời bằng dữ liệu của chính bạn: các mã b�
 - Điền một mốc: `python3 -m valuation.journal update FPT 2026-10-27 --at 6 --price 61000 --vnindex 1812.5`.
   Nếu giữa chừng có thưởng cổ phiếu hoặc chia tách, thêm `--share-factor` (thưởng 10:1 là 1.1) để giá trước và sau so được với nhau.
 - Trong Claude Code: gõ `/nhatky`. Skill tìm giá, VN-Index và các sự kiện quyền rồi điền giúp.
+- Mỗi lần `--save` còn lưu bản chụp giả định `journal/<ngày>_<mã>.json` cạnh memo.
+  `python3 -m valuation.compare FPT` so hai bản lưu gần nhất: số liệu nào đổi, giả định phán đoán nào đổi, và mỗi thay đổi làm giá trị base đổi bao nhiêu.
+  Dùng nó để tách thay đổi do dữ liệu mới khỏi thay đổi chỉ do đổi ý.
 
 So sánh theo giá, không gồm cổ tức tiền mặt ở cả hai bên (VN-Index cũng là chỉ số giá).
 Dưới 10 mục ở mỗi mốc thì chưa kết luận được gì.
@@ -123,7 +127,7 @@ sources/<MA>/        BCTC đã tải (PDF không commit) và extraction.json
 .claude/skills/bctc  lệnh /bctc trong Claude Code
 .claude/skills/nhatky  lệnh /nhatky trong Claude Code
 tests/               unittest
-journal/             memo đã lưu và log.csv, để xem lại sau 6-12 tháng
+journal/             memo đã lưu, bản chụp giả định và log.csv, để xem lại sau 6-12 tháng
 CLAUDE.md            bàn giao cho phiên Claude Code tiếp theo
 docs/claude-code-setup.md  cách cài Claude Code và câu lệnh đầu tiên
 docs/threat-model.md       rủi ro khi LLM đọc tài liệu bên ngoài và các lớp phòng thủ

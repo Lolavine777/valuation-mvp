@@ -64,4 +64,5 @@ python3 -m valuation inputs/demo.json
 python3 -m valuation inputs/demo.json --save
 python3 -m tools.draft_input sources/<MA>/extraction.json
 python3 -m valuation.journal report
+python3 -m valuation.compare <MA>
 ```
