@@ -16,6 +16,7 @@ import datetime as dt
 from typing import Any, Optional
 
 PER_SHARE_FACTOR = 1000.0  # (tỷ VND * 1e9) / (triệu cp * 1e6) = tỷ * 1000 / triệu cp
+REVERSE_SCAN_STEPS = 100  # bước 0,5 điểm % trên khoảng [-10%, 40%]; đủ mịn để không bỏ sót điểm cắt ở sườn bướu
 
 REQUIRED = [
     "company",
@@ -302,13 +303,32 @@ def sensitivity(
     return {"waccs": waccs, "gs": gs, "grid": grid}
 
 
+def _peak(f, a: float, b: float, iterations: int = 60) -> float:
+    """Tìm điểm cực đại của f trên [a, b] bằng golden-section search (f có một đỉnh trong đoạn)."""
+    r = (5**0.5 - 1) / 2
+    c, d = b - r * (b - a), a + r * (b - a)
+    fc, fd = f(c), f(d)
+    for _ in range(iterations):
+        if fc > fd:
+            b, d, fd = d, c, fc
+            c = b - r * (b - a)
+            fc = f(c)
+        else:
+            a, c, fc = c, d, fd
+            d = a + r * (b - a)
+            fd = f(d)
+    return (a + b) / 2
+
+
 def reverse_dcf(inp: dict, lo: float = -0.10, hi: float = 0.40) -> dict[str, Any]:
     """Tìm tăng trưởng doanh thu giai đoạn đầu mà thị trường đang ngầm định giá.
 
     Giữ nguyên mọi giả định khác, chỉ thay growth_start sao cho giá trị = giá hiện tại.
+    Giá trị theo tăng trưởng có thể có dạng bướu (tăng trưởng vượt ROIC làm FCFF âm), nên không thể
+    chỉ so hai đầu khoảng: hàm quét cả khoảng và trả về mức tăng trưởng thấp nhất khớp với giá.
     Trả về {"growth": số hoặc None, "status": ...} với status là một trong:
-    ok, no_price, above_range (giá cao hơn cả khi tăng trưởng = hi),
-    below_range (giá thấp hơn cả khi tăng trưởng = lo), no_root.
+    ok, no_price, above_range (giá cao hơn mọi giá trị trong khoảng [lo, hi]),
+    below_range (giá thấp hơn mọi giá trị trong khoảng), no_root.
     """
     price = inp.get("price")
     if not price:
@@ -322,16 +342,27 @@ def reverse_dcf(inp: dict, lo: float = -0.10, hi: float = 0.40) -> dict[str, Any
         except InputError:
             return None
 
-    f_lo, f_hi = f(lo), f(hi)
     out = {"growth": None, "status": "no_root", "lo": lo, "hi": hi}
-    if f_lo is None or f_hi is None:
+    grid = [lo + (hi - lo) * k / REVERSE_SCAN_STEPS for k in range(REVERSE_SCAN_STEPS + 1)]
+    diffs = [f(g) for g in grid]
+    if any(d is None for d in diffs):
         return out
-    if f_lo * f_hi > 0:
-        if f_lo < 0 and f_hi < 0:
-            out["status"] = "above_range"
-        elif f_lo > 0 and f_hi > 0:
-            out["status"] = "below_range"
+    bracket = next(
+        ((a, b, fa, fb) for a, b, fa, fb in zip(grid, grid[1:], diffs, diffs[1:]) if fa * fb <= 0),
+        None,
+    )
+    if bracket is None and diffs[0] < 0:
+        # Giá có thể nằm ngay dưới đỉnh bướu, giữa hai điểm lưới: tìm đỉnh thật quanh điểm lưới cao nhất.
+        k = max(range(len(diffs)), key=diffs.__getitem__)
+        left = max(k - 1, 0)
+        peak_g = _peak(f, grid[left], grid[min(k + 1, len(grid) - 1)])
+        f_peak = f(peak_g)
+        if f_peak >= 0:
+            bracket = (grid[left], peak_g, diffs[left], f_peak)
+    if bracket is None:
+        out["status"] = "above_range" if diffs[0] < 0 else "below_range"
         return out
+    lo, hi, f_lo, f_hi = bracket
     for _ in range(100):
         mid = (lo + hi) / 2
         f_mid = f(mid)

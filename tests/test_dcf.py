@@ -118,6 +118,19 @@ class TestEngine(unittest.TestCase):
         self.assertEqual(rv["status"], "ok")
         self.assertAlmostEqual(rv["growth"], 0.08, places=4)
 
+    def test_reverse_dcf_finds_root_when_value_is_hump_shaped(self):
+        # ROIC thấp: giá trị tăng rồi giảm theo tăng trưởng, nên cả hai đầu khoảng đều thấp hơn giá
+        inp = make_inputs(growth_start=0.07, growth_terminal=0.03, roic=0.13, roic_terminal=0.12, wacc={"override": 0.12})
+        target = dcf.value(inp)["per_share"]
+        for g in (-0.10, 0.40):
+            self.assertLess(dcf.value({**inp, "growth_start": g})["per_share"], target)
+        probe = copy.deepcopy(inp)
+        probe["growth_start"] = 0.0
+        probe["price"] = target
+        rv = dcf.reverse_dcf(probe)
+        self.assertEqual(rv["status"], "ok")
+        self.assertAlmostEqual(rv["growth"], 0.07, places=4)
+
     def test_reverse_dcf_without_price(self):
         inp = make_inputs()
         inp.pop("price")

@@ -145,14 +145,15 @@ def build_memo(a: dict[str, Any]) -> str:
         L.append("Không tính được vì chưa có giá thị trường.")
     elif rv["status"] == "above_range":
         L.append(
-            f"Giá {_n(price)} VND cao đến mức ngay cả khi doanh thu tăng {_p(rv['hi'], 0)}/năm trong {h} năm đầu, "
-            "với ROIC, biên và WACC hiện tại, giá trị ước tính vẫn thấp hơn giá. "
+            f"Giá {_n(price)} VND cao hơn mọi giá trị ước tính khi doanh thu tăng từ {_p(rv['lo'], 0)} đến "
+            f"{_p(rv['hi'], 0)}/năm trong {h} năm đầu, với ROIC, biên và WACC hiện tại. "
+            "Tăng trưởng cao hơn nữa cũng không giúp, vì phần lợi nhuận phải tái đầu tư (tăng trưởng / ROIC) tăng theo. "
             "Hoặc thị trường đang kỳ vọng một điều không nằm trong các giả định này, hoặc giá đang cao hơn giá trị."
         )
     elif rv["status"] == "below_range":
         L.append(
-            f"Giá {_n(price)} VND thấp đến mức ngay cả khi doanh thu giảm {_p(abs(rv['lo']), 0)}/năm trong {h} năm đầu, "
-            "giá trị ước tính vẫn cao hơn giá. Nên kiểm tra lại dữ liệu đầu vào trước khi tin kết quả này."
+            f"Giá {_n(price)} VND thấp hơn mọi giá trị ước tính khi doanh thu tăng từ {_p(rv['lo'], 0)} đến "
+            f"{_p(rv['hi'], 0)}/năm trong {h} năm đầu. Nên kiểm tra lại dữ liệu đầu vào trước khi tin kết quả này."
         )
     elif implied is None:
         L.append("Không tìm được nghiệm ổn định với các giả định hiện tại.")
