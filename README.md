@@ -17,6 +17,7 @@ Không dự đoán giá, không khuyến nghị mua bán, không giao dịch t�
 ## Chạy thử (30 giây)
 
 Cần Python 3.10 trở lên. Không cần cài gì thêm.
+Muốn có lệnh `valuation` dùng ở mọi thư mục: `pipx install git+https://github.com/Lolavine777/valuation-mvp` (vẫn không kéo thêm thư viện nào).
 
 ```bash
 python3 -m valuation inputs/demo.json            # in memo ra màn hình

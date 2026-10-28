@@ -17,3 +17,4 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: python -m unittest discover -s tests
       - run: python -m valuation inputs/demo.json
+      - run: pip install . && valuation inputs/demo.json > /dev/null
