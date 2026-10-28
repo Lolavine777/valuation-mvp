@@ -26,6 +26,7 @@ python3 -m unittest discover -s tests            # chạy toàn bộ test
 ```
 
 `inputs/demo.json` là **công ty giả định**, số liệu minh họa, chỉ để xem công cụ chạy.
+Muốn xem trước đầu ra mà không cần chạy: [docs/sample-memo.md](docs/sample-memo.md) là memo của công ty giả định này.
 
 ## Dùng cho một công ty thật (khoảng 10 phút)
 
